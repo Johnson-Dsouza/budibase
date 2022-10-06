@@ -40,9 +40,9 @@ service:
   port: 10000
 
 ingress:
-  enabled: true
+  enabled: false
   aws: false
-  nginx: true
+  nginx: false
   certificateArn: ""
   className: ""
   annotations:
@@ -82,7 +82,7 @@ globals:
   posthogToken: "phc_bIjZL7oh2GEUd2vqvTBH8WvrX0fWTFQMs6H5KQxiUxU"
   logLevel: info
   selfHosted: "1" # set to 0 for budibase cloud environment, set to 1 for self-hosted setup
-  multiTenancy: "0" # set to 0 to disable multiple orgs, set to 1 to enable multiple orgs
+  multiTenancy: "1" # set to 0 to disable multiple orgs, set to 1 to enable multiple orgs
   accountPortalUrl: ""
   accountPortalApiKey: ""
   cookieDomain: ""
@@ -114,6 +114,12 @@ services:
     port: 10000
     replicaCount: 1
     resources: {}
+    nodePort: 30000
+    upstreams:
+      apps: 'http://app-service.{{ .Release.Namespace }}.svc.{{ .Values.services.dns }}:{{ .Values.services.apps.port }}'
+      worker: 'http://worker-service.{{ .Release.Namespace }}.svc.{{ .Values.services.dns }}:{{ .Values.services.worker.port }}'
+      minio: 'http://minio-service.{{ .Release.Namespace }}.svc.{{ .Values.services.dns }}:9000'
+      couchdb: 'http://budibase-svc-couchdb.{{ .Release.Namespace }}.svc.{{ .Values.services.dns }}:5984'
 
   apps:
     port: 4002
@@ -205,10 +211,10 @@ couchdb:
   ## provisioning of Persistent Volumes; leaving it unset will invoke the default
   ## provisioner.
   persistentVolume:
-    enabled: false
+    enabled: true
     accessModes:
       - ReadWriteOnce
-    size: 10Gi
+    size: 50Gi
     storageClass: ""
 
   ## The CouchDB image

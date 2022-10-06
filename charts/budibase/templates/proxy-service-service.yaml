@@ -7,12 +7,15 @@ metadata:
   creationTimestamp: null
   labels:
     app.kubernetes.io/name: budibase-proxy
+    app: proxy-service
   name: proxy-service
 spec:
+  type: NodePort
   ports:
   - name: {{ .Values.services.proxy.port | quote }}
     port: {{ .Values.services.proxy.port }}
     targetPort: {{ .Values.services.proxy.port }}
+    nodePort: {{ .Values.services.proxy.nodePort }}
   selector:
     app.kubernetes.io/name: budibase-proxy
 status:
